@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OR Savings Calculator | Esparza Surgical</title>
+<meta name="description" content="Calculate your facility's potential annual savings with SafeTuck — the FDA-registered OR limb securement system.">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#0a1628; --navy-mid:#0d1e3a; --navy-lite:#162d56;
+    --steel:#4a7abf; --light-blue:#7ab0e0; --white:#f0f4fb;
+    --silver:rgba(200,216,234,0.75); --dim:rgba(200,216,234,0.4);
+    --border:rgba(74,122,191,0.18);
+    --green:#2a7a4a; --green-lite:rgba(42,122,74,0.15);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{background:var(--navy);color:var(--white);scroll-behavior:smooth;}
+  body{font-family:'Montserrat',sans-serif;background:var(--navy);min-height:100vh;}
+
+  nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:18px 60px;background:rgba(10,22,40,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+  .nav-logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+  .nav-shield{width:28px;height:32px;}
+  .nav-brand{display:flex;flex-direction:column;}
+  .nav-brand-main{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--white);letter-spacing:0.15em;line-height:1;}
+  .nav-brand-sub{font-size:8px;font-weight:500;letter-spacing:0.5em;text-transform:uppercase;color:var(--steel);margin-top:5px;}
+  .nav-back{font-size:10px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--silver);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color 0.3s;}
+  .nav-back:hover{color:var(--light-blue);}
+
+  .hero{padding:140px 60px 60px;text-align:center;position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(74,122,191,0.12) 0%,transparent 70%);pointer-events:none;}
+  .hero-eyebrow{font-size:10px;font-weight:600;letter-spacing:0.4em;text-transform:uppercase;color:var(--steel);margin-bottom:16px;}
+  .hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,5vw,60px);font-weight:300;color:var(--white);letter-spacing:0.04em;line-height:1.1;margin-bottom:20px;}
+  .hero h1 em{font-style:italic;color:var(--light-blue);}
+  .hero-sub{font-size:13px;font-weight:300;color:var(--silver);max-width:540px;margin:0 auto;line-height:1.8;letter-spacing:0.03em;}
+
+  /* LAYOUT */
+  .wrap{max-width:1140px;margin:0 auto;padding:0 60px 100px;}
+
+  /* INPUTS */
+  .inputs-card{background:rgba(255,255,255,0.025);border:1px solid var(--border);border-radius:4px;padding:40px;margin-bottom:32px;}
+  .card-title{font-size:9px;font-weight:600;letter-spacing:0.4em;text-transform:uppercase;color:var(--steel);margin-bottom:28px;display:flex;align-items:center;gap:10px;}
+  .card-title::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--border),transparent);}
+
+  .inputs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  .input-group{}
+  .input-group label{display:block;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin-bottom:7px;}
+  .input-row{display:flex;align-items:center;background:rgba(74,122,191,0.06);border:1px solid rgba(74,122,191,0.2);border-radius:2px;transition:border-color 0.3s;}
+  .input-row:focus-within{border-color:var(--steel);}
+  .input-prefix{padding:0 10px;font-size:12px;font-weight:600;color:var(--steel);border-right:1px solid rgba(74,122,191,0.2);height:40px;display:flex;align-items:center;flex-shrink:0;}
+  .input-row input{flex:1;background:none;border:none;outline:none;padding:10px 12px;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:500;color:var(--white);width:100%;}
+  .input-hint{font-size:9px;color:var(--dim);margin-top:4px;letter-spacing:0.03em;line-height:1.4;}
+
+  /* RESULTS GRID */
+  .results-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px;}
+
+  .result-col{border-radius:4px;padding:32px;border:1px solid;}
+  .col-conservative{background:rgba(74,122,191,0.06);border-color:rgba(74,122,191,0.25);}
+  .col-potential{background:rgba(42,122,74,0.06);border-color:rgba(42,122,74,0.25);}
+
+  .col-header{margin-bottom:24px;}
+  .col-badge{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:10px;}
+  .badge-conservative{background:rgba(74,122,191,0.15);color:var(--light-blue);border:1px solid rgba(74,122,191,0.3);}
+  .badge-potential{background:rgba(42,122,74,0.15);color:#6ac48a;border:1px solid rgba(42,122,74,0.3);}
+  .col-header p{font-size:11px;color:var(--dim);line-height:1.6;letter-spacing:0.02em;}
+
+  .result-item{padding:14px 0;border-bottom:1px solid var(--border);}
+  .result-item:last-of-type{border-bottom:none;}
+  .result-label{font-size:9px;font-weight:600;letter-spacing:0.25em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+  .result-value{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--white);line-height:1;}
+  .result-sub{font-size:9px;color:var(--dim);margin-top:3px;letter-spacing:0.03em;}
+
+  .total-box{margin-top:20px;padding:20px;border-radius:3px;text-align:center;}
+  .total-box-conservative{background:rgba(74,122,191,0.1);border:1px solid rgba(74,122,191,0.3);}
+  .total-box-potential{background:rgba(42,122,74,0.1);border:1px solid rgba(42,122,74,0.3);}
+  .total-label{font-size:9px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:6px;}
+  .total-label-c{color:var(--light-blue);}
+  .total-label-p{color:#6ac48a;}
+  .total-value{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:600;line-height:1;}
+  .total-value-c{background:linear-gradient(135deg,#d0e8ff,#7ab0e0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .total-value-p{background:linear-gradient(135deg,#a0e8b0,#4ac46a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .total-sub{font-size:9px;color:var(--dim);margin-top:4px;letter-spacing:0.05em;}
+
+  /* DEFINITIONS */
+  .definitions{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:4px;padding:28px 32px;margin-bottom:28px;}
+  .def-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  .def-item{}
+  .def-badge{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:12px;font-size:8px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:8px;}
+  .def-title{font-size:11px;font-weight:600;color:var(--silver);margin-bottom:6px;letter-spacing:0.05em;}
+  .def-items{list-style:none;}
+  .def-items li{font-size:11px;color:var(--dim);line-height:1.7;padding-left:14px;position:relative;}
+  .def-items li::before{content:'·';position:absolute;left:0;color:var(--steel);}
+
+  /* CTA */
+  .cta-row{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center;}
+  .cta-card{background:rgba(74,122,191,0.08);border:1px solid rgba(74,122,191,0.25);border-radius:4px;padding:28px 32px;text-align:center;}
+  .btn-primary{display:inline-block;background:var(--steel);color:white;padding:14px 32px;border-radius:2px;text-decoration:none;font-size:10px;font-weight:600;letter-spacing:0.25em;text-transform:uppercase;border:none;cursor:pointer;transition:background 0.3s;width:100%;}
+  .btn-primary:hover{background:var(--light-blue);}
+  .cta-note{font-size:9px;color:var(--dim);margin-top:8px;letter-spacing:0.05em;line-height:1.6;}
+
+  .methodology{font-size:10px;color:var(--dim);line-height:1.8;letter-spacing:0.02em;}
+  .methodology strong{color:rgba(200,216,234,0.6);}
+
+  /* CASES */
+  .cases-bar{background:rgba(74,122,191,0.05);border:1px solid var(--border);border-radius:3px;padding:16px 24px;margin-bottom:28px;display:flex;gap:40px;align-items:center;}
+  .cases-stat{text-align:center;}
+  .cases-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--white);}
+  .cases-lbl{font-size:9px;font-weight:600;letter-spacing:0.25em;text-transform:uppercase;color:var(--dim);margin-top:2px;}
+  .cases-divider{width:1px;height:40px;background:var(--border);}
+
+  @media(max-width:900px){
+    nav{padding:16px 24px;}
+    .hero{padding:120px 24px 50px;}
+    .wrap{padding:0 24px 60px;}
+    .inputs-grid{grid-template-columns:1fr 1fr;}
+    .results-grid{grid-template-columns:1fr;}
+    .result-item{text-align:center;}
+    .result-value{text-align:center;}
+    .result-label{text-align:center;}
+    .result-sub{text-align:center;}
+    .col-header p{text-align:center;}
+    .def-grid{grid-template-columns:1fr;}
+    .cta-row{grid-template-columns:1fr;}
+    .cases-bar{flex-wrap:wrap;gap:20px;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <svg class="nav-shield" viewBox="0 0 180 205" fill="none">
+      <defs>
+        <linearGradient id="nf" x1="30" y1="6" x2="150" y2="130" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#2a5090"/><stop offset="55%" stop-color="#162d56"/><stop offset="100%" stop-color="#060e1c"/></linearGradient>
+        <linearGradient id="nr" x1="0" y1="0" x2="180" y2="205" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#d4eaff"/><stop offset="25%" stop-color="#78b8e8"/><stop offset="65%" stop-color="#2a5090"/><stop offset="100%" stop-color="#080f1e"/></linearGradient>
+        <linearGradient id="nc" x1="90" y1="20" x2="90" y2="188" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#eef8ff"/><stop offset="35%" stop-color="#96ccf8"/><stop offset="100%" stop-color="#3070cc"/></linearGradient>
+        <linearGradient id="nl" x1="10" y1="100" x2="30" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#6a9ed8" stop-opacity="0.85"/><stop offset="100%" stop-color="#1a3060" stop-opacity="0"/></linearGradient>
+        <linearGradient id="ns" x1="15" y1="8" x2="120" y2="85" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#fff" stop-opacity="0.25"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></linearGradient>
+        <filter id="ncg"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <clipPath id="ncp"><path d="M90 6 L170 37 L170 112 Q170 167 90 194 Q10 167 10 112 L10 37 Z"/></clipPath>
+      </defs>
+      <path d="M90 6 L170 37 L170 112 Q170 167 90 194 Q10 167 10 112 L10 37 Z" fill="url(#nf)"/>
+      <path d="M90 6 L10 37 L10 112 Q10 167 90 194 Q10 167 10 112 L10 37 Z" fill="url(#nl)" clip-path="url(#ncp)"/>
+      <path d="M90 6 L170 37 L155 75 Q130 55 90 53 Q50 55 25 75 L10 37 Z" fill="url(#ns)"/>
+      <path d="M90 6 L170 37 L170 112 Q170 167 90 194 Q10 167 10 112 L10 37 Z" fill="none" stroke="url(#nr)" stroke-width="2.5"/>
+      <rect x="76" y="22" width="28" height="160" rx="5" fill="url(#nc)" filter="url(#ncg)"/>
+      <rect x="26" y="78" width="128" height="30" rx="5" fill="url(#nc)" filter="url(#ncg)"/>
+      <rect x="76" y="22" width="12" height="160" rx="5" fill="rgba(255,255,255,0.2)"/>
+      <rect x="26" y="78" width="128" height="12" rx="5" fill="rgba(255,255,255,0.2)"/>
+    </svg>
+    <div class="nav-brand">
+      <span class="nav-brand-main">Esparza</span>
+      <span class="nav-brand-sub">Surgical</span>
+    </div>
+  </a>
+  <a href="index.html" class="nav-back">← Back to Main Site</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">SafeTuck · Financial Impact Analysis</div>
+  <h1>OR Savings <em>Calculator</em></h1>
+  <p class="hero-sub">Enter your facility's numbers to see both a conservative hard-savings estimate and full potential value — so you have the right number for every conversation.</p>
+</div>
+
+<div class="wrap">
+
+  <!-- INPUTS -->
+  <div class="inputs-card">
+    <div class="card-title">Your Facility Details</div>
+    <div class="inputs-grid">
+      <div class="input-group">
+        <label>OR Rooms</label>
+        <div class="input-row"><span class="input-prefix">#</span><input type="number" id="orRooms" value="10" min="1" max="100"></div>
+      </div>
+      <div class="input-group">
+        <label>Cases / Room / Day</label>
+        <div class="input-row"><span class="input-prefix">#</span><input type="number" id="casesPerDay" value="3" min="1" max="20"></div>
+        <div class="input-hint">Typical: 3–6 per room</div>
+      </div>
+      <div class="input-group">
+        <label>OR Days / Year</label>
+        <div class="input-row"><span class="input-prefix">#</span><input type="number" id="orDays" value="250" min="1" max="365"></div>
+        <div class="input-hint">Typical: 240–260</div>
+      </div>
+      <div class="input-group">
+        <label>Disposable Cost / Case</label>
+        <div class="input-row"><span class="input-prefix">$</span><input type="number" id="disposableCost" value="10" min="0" max="100"></div>
+        <div class="input-hint">Sheets, pads, tape per case</div>
+      </div>
+      <div class="input-group">
+        <label>Current Tuck Time (min)</label>
+        <div class="input-row"><span class="input-prefix">min</span><input type="number" id="tuckTime" value="7" min="1" max="30"></div>
+        <div class="input-hint">SafeTuck: &lt;1 min</div>
+      </div>
+      <div class="input-group">
+        <label>OR Cost / Minute</label>
+        <div class="input-row"><span class="input-prefix">$</span><input type="number" id="orCostPerMin" value="120" min="1" max="500"></div>
+        <div class="input-hint">Industry avg: $90–$150</div>
+      </div>
+      <div class="input-group">
+        <label>Staff Used to Tuck</label>
+        <div class="input-row"><span class="input-prefix">#</span><input type="number" id="staffCount" value="3" min="1" max="6"></div>
+        <div class="input-hint">SafeTuck needs only 1</div>
+      </div>
+      <div class="input-group">
+        <label>Staff Cost / Min / Person</label>
+        <div class="input-row"><span class="input-prefix">$</span><input type="number" id="staffCost" value="1" min="0.25" max="10" step="0.25"></div>
+        <div class="input-hint">$1/min = ~$60/hr</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASES BAR -->
+  <div class="cases-bar">
+    <div class="cases-stat"><div class="cases-num" id="totalCases">7,500</div><div class="cases-lbl">Total Cases / Year</div></div>
+    <div class="cases-divider"></div>
+    <div class="cases-stat"><div class="cases-num" id="minSaved">45,000</div><div class="cases-lbl">OR Minutes Recovered</div></div>
+    <div class="cases-divider"></div>
+    <div class="cases-stat"><div class="cases-num" id="staffHours">3,500</div><div class="cases-lbl">Staff Hours Freed</div></div>
+    <div class="cases-divider"></div>
+    <div class="cases-stat"><div class="cases-num" id="perRoomC">$0</div><div class="cases-lbl">Conservative / Room / Yr</div></div>
+    <div class="cases-divider"></div>
+    <div class="cases-stat"><div class="cases-num" id="perRoomP">$0</div><div class="cases-lbl">Potential / Room / Yr</div></div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-grid">
+
+    <!-- CONSERVATIVE -->
+    <div class="result-col col-conservative">
+      <div class="col-header">
+        <div class="col-badge badge-conservative">✓ Conservative Estimate</div>
+        <p>Hard dollar savings only — what finance and VAC committees will accept without pushback. These numbers are defensible in any budget meeting.</p>
+      </div>
+
+      <div class="result-item">
+        <div class="result-label">Disposable Savings</div>
+        <div class="result-value" id="c_disposable">$0</div>
+        <div class="result-sub">Sheets, pads & tape fully replaced by reusable SafeTuck</div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Direct Labor Savings</div>
+        <div class="result-value" id="c_staff">$0</div>
+        <div class="result-sub">Staff time redeployed at labor cost rate (not full OR rate)</div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">OR Throughput Value (20%)</div>
+        <div class="result-value" id="c_ortime">$0</div>
+        <div class="result-sub">20% capacity utilization — conservative assumption for added cases</div>
+      </div>
+
+      <div class="total-box total-box-conservative">
+        <div class="total-label total-label-c">Conservative Annual Savings</div>
+        <div class="total-value total-value-c" id="c_total">$0</div>
+        <div class="total-sub">across all OR rooms · per year</div>
+      </div>
+    </div>
+
+    <!-- POTENTIAL -->
+    <div class="result-col col-potential">
+      <div class="col-header">
+        <div class="col-badge badge-potential">↑ Full Potential Value</div>
+        <p>Total value if recovered OR time is fully backfilled with additional cases. Use this with surgical volume data to show maximum upside to administration.</p>
+      </div>
+
+      <div class="result-item">
+        <div class="result-label">Disposable Savings</div>
+        <div class="result-value" id="p_disposable">$0</div>
+        <div class="result-sub">Same hard savings — identical in both scenarios</div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Full OR Time Value</div>
+        <div class="result-value" id="p_ortime">$0</div>
+        <div class="result-sub">100% of recovered OR time at full facility rate</div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Staff Redeployment Value</div>
+        <div class="result-value" id="p_staff">$0</div>
+        <div class="result-sub">Full staff time freed across all cases</div>
+      </div>
+
+      <div class="total-box total-box-potential">
+        <div class="total-label total-label-p">Full Potential Annual Value</div>
+        <div class="total-value total-value-p" id="p_total">$0</div>
+        <div class="total-sub">across all OR rooms · per year</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- WHAT EACH MEANS -->
+  <div class="definitions">
+    <div class="card-title">How to Use These Numbers</div>
+    <div class="def-grid">
+      <div class="def-item">
+        <div class="def-badge badge-conservative">Conservative</div>
+        <div class="def-title">Use this with VAC, Supply Chain & Finance</div>
+        <ul class="def-items">
+          <li>Hard dollar savings only — no assumptions about adding cases</li>
+          <li>Disposable replacement is a direct line-item reduction</li>
+          <li>Labor savings use staffing cost, not full OR overhead rate</li>
+          <li>20% OR time utilization is a conservative industry standard</li>
+          <li>Finance committees will approve this without challenge</li>
+        </ul>
+      </div>
+      <div class="def-item">
+        <div class="def-badge badge-potential">Full Potential</div>
+        <div class="def-title">Use this with OR Directors & Administration</div>
+        <ul class="def-items">
+          <li>Shows total value if facility increases case volume</li>
+          <li>Valid for facilities with surgical backlogs or wait lists</li>
+          <li>Use with your facility's actual OR utilization rate</li>
+          <li>Strong for C-suite and strategic planning conversations</li>
+          <li>Always pair with your facility's actual volume data</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA + METHODOLOGY -->
+  <div class="cta-row">
+    <div class="cta-card">
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.3em;text-transform:uppercase;color:var(--steel);margin-bottom:12px;">Ready to See It Live?</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--white);margin-bottom:16px;line-height:1.3;">Schedule a 20-minute in-service at your facility</div>
+      <a href="index.html#contact" class="btn-primary">Request In-Service Demo</a>
+      <p class="cta-note">Christian Esparza · (832) 646-0389 · christian@esparzasurgical.com<br>No commitment required · Texas facilities</p>
+    </div>
+    <div class="methodology">
+      <strong>Methodology & Assumptions</strong><br><br>
+      <strong>Conservative estimate</strong> includes: (1) full disposable cost elimination per case, (2) direct labor savings using staff cost rate × time freed × staff count reduction, and (3) 20% of recovered OR time valued at your stated rate — a standard conservative assumption used by healthcare finance teams when backfill is uncertain.<br><br>
+      <strong>Full potential</strong> includes 100% of recovered OR time at your stated rate — valid when facilities have surgical backlogs or documented unmet demand. Always validate with your facility's actual OR utilization data.<br><br>
+      SafeTuck reduces arm-tuck time from a facility average of 5–10 minutes to under 1 minute, and reduces required staff from 2–4 persons to 1. Disposable positioning materials (sheets, foam pads, tape) are fully replaced by the reusable device. Individual results vary by case mix, facility size, and current practices.<br><br>
+      <strong>For a custom facility analysis contact Christian Esparza at (832) 646-0389.</strong>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SAFETUCK_TIME = 1;
+const SAFETUCK_STAFF = 1;
+
+function fmt(n) {
+  if (n >= 1000000) return '$' + (n/1000000).toFixed(2) + 'M';
+  if (n >= 1000) return '$' + Math.round(n).toLocaleString();
+  return '$' + Math.round(n).toLocaleString();
+}
+function fmtN(n) { return Math.round(n).toLocaleString(); }
+
+function calc() {
+  const orRooms      = parseFloat(document.getElementById('orRooms').value)||0;
+  const casesPerDay  = parseFloat(document.getElementById('casesPerDay').value)||0;
+  const orDays       = parseFloat(document.getElementById('orDays').value)||0;
+  const disposable   = parseFloat(document.getElementById('disposableCost').value)||0;
+  const tuckTime     = parseFloat(document.getElementById('tuckTime').value)||0;
+  const orCostPerMin = parseFloat(document.getElementById('orCostPerMin').value)||0;
+  const staffCount   = parseFloat(document.getElementById('staffCount').value)||0;
+  const staffCost    = parseFloat(document.getElementById('staffCost').value)||0;
+
+  const totalCases  = orRooms * casesPerDay * orDays;
+  const timeSaved   = Math.max(0, tuckTime - SAFETUCK_TIME);
+  const staffFreed  = Math.max(0, staffCount - SAFETUCK_STAFF);
+
+  // Hard savings (both scenarios)
+  const dispSavings = totalCases * disposable;
+
+  // Staff savings — labor cost only
+  const staffSavings = totalCases * staffFreed * staffCost * tuckTime;
+
+  // OR time — full value
+  const orTimeFull = totalCases * timeSaved * orCostPerMin;
+  // OR time — conservative 20%
+  const orTimeCons = orTimeFull * 0.20;
+
+  // Totals
+  const conservative = dispSavings + staffSavings + orTimeCons;
+  const potential    = dispSavings + orTimeFull + staffSavings;
+
+  // Stats bar
+  document.getElementById('totalCases').textContent  = fmtN(totalCases);
+  document.getElementById('minSaved').textContent    = fmtN(totalCases * timeSaved);
+  document.getElementById('staffHours').textContent  = fmtN(totalCases * staffFreed * tuckTime / 60);
+  document.getElementById('perRoomC').textContent    = orRooms > 0 ? fmt(conservative/orRooms) : '$0';
+  document.getElementById('perRoomP').textContent    = orRooms > 0 ? fmt(potential/orRooms) : '$0';
+
+  // Conservative col
+  document.getElementById('c_disposable').textContent = fmt(dispSavings);
+  document.getElementById('c_staff').textContent      = fmt(staffSavings);
+  document.getElementById('c_ortime').textContent     = fmt(orTimeCons);
+  document.getElementById('c_total').textContent      = fmt(conservative);
+
+  // Potential col
+  document.getElementById('p_disposable').textContent = fmt(dispSavings);
+  document.getElementById('p_ortime').textContent     = fmt(orTimeFull);
+  document.getElementById('p_staff').textContent      = fmt(staffSavings);
+  document.getElementById('p_total').textContent      = fmt(potential);
+}
+
+['orRooms','casesPerDay','orDays','disposableCost','tuckTime','orCostPerMin','staffCount','staffCost']
+  .forEach(id => document.getElementById(id).addEventListener('input', calc));
+
+calc();
+</script>
+</body>
+</html>
